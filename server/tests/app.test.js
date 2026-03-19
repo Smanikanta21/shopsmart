@@ -31,14 +31,14 @@ describe('Auth integration tests', () => {
         }
 
         const probeEmail = `probe_${Date.now()}_${Math.random().toString(36).slice(2)}@shopsmart.com`;
-            const probeRes = await request(app).post(candidate).send({
+            const probeRes = await request(app).post(signupCandidates).send({
                 name: 'Probe User',
                 email: probeEmail,
                 password: 'ProbePass123!'
             });
 
             if (probeRes.statusCode !== 404) {
-                signupPath = candidate;
+                signupPath = signupCandidates;
                 await User.deleteOne({ email: probeEmail });
             }
     });
