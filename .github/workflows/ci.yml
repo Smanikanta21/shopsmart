@@ -2,12 +2,11 @@ name: Backend CI
 
 on:
   push:
-    branches:
-      - branch:['Dev']
+    branches: [dev]
   pull_request:
-    branches:
-      - branch:['main']
+    branches: [main]
 
+    
 jobs:
   lint-and-test:
     runs-on: ubuntu-latest
