@@ -1,8 +1,7 @@
-const path = require('path');
 const mongoose = require('mongoose');
 const request = require('supertest');
 
-require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
+require('dotenv').config();
 
 const app = require('../src/app');
 const User = require('../src/models/db.Users');

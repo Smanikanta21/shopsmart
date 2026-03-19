@@ -1,10 +1,8 @@
 const express = require('express');
 const cors = require('cors');
-const DbConnect = require('./configs/db.Config');
 const authRoutes = require('./routes/auth.Routes');
 const app = express();
 
-DbConnect();  
 app.use(cors({
   origin: 'http://localhost:5173',
   methods: ['GET', 'POST', 'PUT', 'DELETE'],

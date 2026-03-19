@@ -1,0 +1,48 @@
+name: Backend CI
+
+on:
+  push:
+    branches:
+      - branch:['Dev']
+  pull_request:
+    branches:
+      - branch:['main']
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: server
+
+    env:
+      NODE_ENV: test
+      MONGO_URI: ${{ secrets.MONGO_URI }}
+      JWT_SECRET: ${{ secrets.JWT_SECRET || 'ci-test-secret' }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: npm
+          cache-dependency-path: server/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Verify required secrets
+        run: |
+          if [ -z "$MONGO_URI" ]; then
+            echo "MONGO_URI secret is missing. Add it in GitHub Settings > Secrets and variables > Actions."
+            exit 1
+          fi
+
+      - name: Run ESLint
+        run: npm run lint
+
+      - name: Run tests
+        run: npm test
