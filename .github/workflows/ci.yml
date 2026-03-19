@@ -2,7 +2,7 @@ name: Backend CI
 
 on:
   push:
-    branches: [dev]
+    branches: [dev, main]
   pull_request:
     branches: [main]
 
@@ -57,34 +57,34 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     steps:
-    # 3) Open secure SSH session to EC2 using GitHub Secrets
-    - name: Deploy over SSH
-      uses: appleboy/ssh-action@v1.2.0
-      with:
-        host: ${{ secrets.EC2_HOST }}
-        username: ${{ secrets.EC2_USER }}
-        key: ${{ secrets.EC2_SSH_KEY }}
-        script_stop: true
-        script: |
-          set -euo pipefail
+      # 3) Open secure SSH session to EC2 using GitHub Secrets
+      - name: Deploy over SSH
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script_stop: true
+          script: |
+            set -euo pipefail
 
-          # 4) Move to backend directory on EC2
-          APP_DIR="$HOME/shopsmart/server"
-          cd "$APP_DIR"
+            # 4) Move to backend directory on EC2
+            APP_DIR="$HOME/shopsmart/server"
+            cd "$APP_DIR"
 
-          # 5) Pull latest main branch code in an idempotent way
-          git fetch --all --prune
-          git reset --hard origin/main
+            # 5) Pull latest main branch code in an idempotent way
+            git fetch --all --prune
+            git reset --hard origin/main
 
-          # 6) Install/update dependencies
-          npm install
+            # 6) Install/update dependencies
+            npm install
 
-          # 7) Restart if PM2 process exists, otherwise start it
-          if pm2 describe shopsmart-backend > /dev/null 2>&1; then
-            pm2 restart shopsmart-backend
-          else
-            pm2 start src/index.js --name shopsmart-backend
-          fi
+            # Ensure pm2 is available in non-interactive shell sessions.
+            if pm2 describe backend > /dev/null 2>&1; then
+              pm2 restart backend
+            else
+              pm2 start src/index.js --name backend
+            fi
 
-          # 8) Persist PM2 process list for reboot recovery
-          pm2 save
+            # 8) Persist PM2 process list for reboot recovery
+            pm2 save
