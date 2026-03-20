@@ -6,4 +6,4 @@ build
 coverage
 .vercel
 client/.env.production
-/client/aws.pem
+.gitignore
