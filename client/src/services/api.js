@@ -1,8 +1,10 @@
 import axios from 'axios';
 
+const API_BASE = '/api';
+
 // Create an Axios instance with base configuration
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5001/api', // Default to localhost if env not set
+  baseURL: API_BASE,
   timeout: 10000, // 10 seconds timeout
 });
 
