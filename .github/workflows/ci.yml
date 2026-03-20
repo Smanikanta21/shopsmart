@@ -57,13 +57,23 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     steps:
+      - name: Check SSH reachability
+        env:
+          HOST: ${{ secrets.EC2_HOST }}
+          PORT: ${{ secrets.EC2_PORT || '22' }}
+        run: |
+          echo "Checking TCP connectivity to $HOST:$PORT"
+          nc -zvw5 "$HOST" "$PORT"
+
       # 3) Open secure SSH session to EC2 using GitHub Secrets
       - name: Deploy over SSH
         uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.EC2_HOST }}
+          port: ${{ secrets.EC2_PORT || '22' }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
+          timeout: 60s
           script_stop: true
           script: |
             set -euo pipefail
